@@ -1,4 +1,10 @@
 services:
+  app:
+    image: mcr.microsoft.com/devcontainers/base:ubuntu
+    volumes:
+      - ..:/workspace:cached
+    command: sleep infinity
+  
   db:
     image: postgres:15-alpine
     restart: unless-stopped
@@ -9,6 +15,5 @@ services:
     volumes:
       - ../DDL.sql:/docker-entrypoint-initdb.d/01_DDL.sql
       - ../DML.sql:/docker-entrypoint-initdb.d/02_DML.sql
-      - ..:/workspace:cached
     ports:
       - "5432:5432"
