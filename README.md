@@ -1,1 +1,2 @@
-# BD---NETFLIX
+# NETFLIX
+Grupo: Joel, Jordana e Miguel
