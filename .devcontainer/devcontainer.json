@@ -1,0 +1,13 @@
+{
+  "name": "Netflix - Banco Isolado no Docker",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "db",
+  "workspaceFolder": "/workspace",
+
+  "containerEnv": {
+    "PGUSER": "postgres",
+    "PGPASSWORD": "mysecretpassword",
+    "PGDATABASE": "netflix",
+    "PGHOST": "localhost"
+  }
+}
