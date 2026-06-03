@@ -77,6 +77,8 @@ psql -U postgres -d netflix -f criar_indices.sql
 ┌─────────────────────────────────────────────┐
 │  3. MENU PRINCIPAL                          │
 │     - Ver Filmes/Séries por Gênero         │
+│     - Editar Perfil                         │
+│     - Editar Conta                          │
 │     - Deletar Perfil                        │
 │     - Deletar Conta                         │
 │     - Sair                                  │
@@ -153,7 +155,8 @@ WHERE go.IDGenero = 1;"
 - ✅ Listar Perfis da Conta
 
 ### UPDATE
-- ❌ (Não implementado nesta versão, foco em CREATE/READ/DELETE)
+- ✅ Editar Perfil (Nome, Avatar)
+- ✅ Editar Conta (Email, Senha, Endereço, Plano)
 
 ### DELETE
 - ✅ Deletar Perfil (com confirmação)

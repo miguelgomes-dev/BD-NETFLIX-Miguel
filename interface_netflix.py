@@ -206,27 +206,245 @@ class InterfaceNetflix:
             print(f"🎬 MENU PRINCIPAL - Perfil: {self.perfil_atual}".center(60))
             print("=" * 60)
             print("\n1. Ver Filmes e Séries")
-            print("2. Deletar Perfil")
-            print("3. Deletar Conta")
-            print("4. Sair")
+            print("2. Editar Perfil")
+            print("3. Editar Conta")
+            print("4. Deletar Perfil")
+            print("5. Deletar Conta")
+            print("6. Sair")
             print("-" * 60)
             
-            opcao = input("Digite sua escolha (1-4): ").strip()
+            opcao = input("Digite sua escolha (1-6): ").strip()
             
             if opcao == "1":
                 self.visualizar_obras()
             elif opcao == "2":
+                self.editar_perfil()
+            elif opcao == "3":
+                self.editar_conta()
+            elif opcao == "4":
                 if self.deletar_perfil():
                     break
-            elif opcao == "3":
+            elif opcao == "5":
                 if self.deletar_conta():
                     return False
-            elif opcao == "4":
+            elif opcao == "6":
                 print("\n👋 Até logo!")
                 return False
             else:
                 print("❌ Opção inválida!")
                 input("Pressione ENTER para continuar...")
+    
+    
+    def editar_perfil(self):
+        """Editar dados do perfil atual"""
+        self.limpar_tela()
+        print("=" * 60)
+        print("✏️  EDITAR PERFIL".center(60))
+        print("=" * 60)
+        
+        # Buscar dados atuais
+        perfil = self.db.buscar_um(
+            "SELECT Nome, Avatar FROM Perfil WHERE IDPerfil = %s",
+            (self.perfil_atual,)
+        )
+        
+        if not perfil:
+            print("❌ Perfil não encontrado!")
+            input("Pressione ENTER para continuar...")
+            return
+        
+        nome_atual, avatar_atual = perfil
+        
+        print(f"\n📋 Dados Atuais:")
+        print(f"   Nome: {nome_atual}")
+        print(f"   Avatar: {avatar_atual}")
+        
+        print("\n1. Alterar Nome")
+        print("2. Alterar Avatar")
+        print("3. Cancelar")
+        print("-" * 60)
+        
+        opcao = input("Escolha uma opção (1-3): ").strip()
+        
+        if opcao == "1":
+            novo_nome = input("\n👤 Novo nome: ").strip()
+            if novo_nome:
+                self.db.executar(
+                    "UPDATE Perfil SET Nome = %s WHERE IDPerfil = %s",
+                    (novo_nome, self.perfil_atual)
+                )
+                print(f"✅ Nome atualizado para: {novo_nome}")
+            else:
+                print("❌ Nome não pode estar vazio!")
+        
+        elif opcao == "2":
+            self.listar_avatares()
+            novo_avatar = input("\n🎨 Novo avatar: ").strip()
+            if novo_avatar:
+                self.db.executar(
+                    "UPDATE Perfil SET Avatar = %s WHERE IDPerfil = %s",
+                    (novo_avatar, self.perfil_atual)
+                )
+                print(f"✅ Avatar atualizado para: {novo_avatar}")
+            else:
+                print("❌ Avatar não pode estar vazio!")
+        
+        elif opcao == "3":
+            print("❌ Operação cancelada!")
+        
+        else:
+            print("❌ Opção inválida!")
+        
+        input("\nPressione ENTER para continuar...")
+    
+    def editar_conta(self):
+        """Editar dados da conta atual"""
+        self.limpar_tela()
+        print("=" * 60)
+        print("✏️  EDITAR CONTA".center(60))
+        print("=" * 60)
+        
+        # Buscar dados atuais
+        conta = self.db.buscar_um(
+            "SELECT Email, IDEndereco FROM Conta WHERE IDConta = %s",
+            (self.conta_atual,)
+        )
+        
+        if not conta:
+            print("❌ Conta não encontrada!")
+            input("Pressione ENTER para continuar...")
+            return
+        
+        email_atual, id_endereco_atual = conta
+        
+        # Buscar endereço atual
+        endereco_atual = self.db.buscar_um(
+            "SELECT Cidade, Estado FROM Endereco WHERE IDEndereco = %s",
+            (id_endereco_atual,)
+        )
+        
+        print(f"\n📋 Dados Atuais:")
+        print(f"   Email: {email_atual}")
+        if endereco_atual:
+            cidade, estado = endereco_atual
+            print(f"   Endereço: {cidade}, {estado}")
+        
+        print("\n1. Alterar Email")
+        print("2. Alterar Senha")
+        print("3. Alterar Endereço")
+        print("4. Alterar Plano")
+        print("5. Cancelar")
+        print("-" * 60)
+        
+        opcao = input("Escolha uma opção (1-5): ").strip()
+        
+        if opcao == "1":
+            while True:
+                novo_email = input("\n📧 Novo email: ").strip()
+                if not self.validar_email(novo_email):
+                    print("❌ Email inválido!")
+                    continue
+                
+                # Verificar se email já existe
+                resultado = self.db.buscar_um(
+                    "SELECT IDConta FROM Conta WHERE Email = %s AND IDConta != %s",
+                    (novo_email, self.conta_atual)
+                )
+                if resultado:
+                    print("❌ Este email já está registrado!")
+                    continue
+                
+                self.db.executar(
+                    "UPDATE Conta SET Email = %s WHERE IDConta = %s",
+                    (novo_email, self.conta_atual)
+                )
+                print(f"✅ Email atualizado para: {novo_email}")
+                break
+        
+        elif opcao == "2":
+            while True:
+                nova_senha = input("\n🔑 Nova senha (mínimo 6 caracteres): ").strip()
+                if not self.validar_senha(nova_senha):
+                    print("❌ Senha deve ter no mínimo 6 caracteres!")
+                    continue
+                
+                confirmacao = input("🔑 Confirme a nova senha: ").strip()
+                if nova_senha != confirmacao:
+                    print("❌ As senhas não conferem!")
+                    continue
+                
+                self.db.executar(
+                    "UPDATE Conta SET Senha = %s WHERE IDConta = %s",
+                    (nova_senha, self.conta_atual)
+                )
+                print("✅ Senha atualizada com sucesso!")
+                break
+        
+        elif opcao == "3":
+            self.listar_enderecos()
+            while True:
+                try:
+                    novo_id_endereco = int(input("\n🏠 Digite o ID do novo endereço: ").strip())
+                    resultado = self.db.buscar_um(
+                        "SELECT IDEndereco FROM Endereco WHERE IDEndereco = %s",
+                        (novo_id_endereco,)
+                    )
+                    if not resultado:
+                        print("❌ Endereço não encontrado!")
+                        continue
+                    
+                    self.db.executar(
+                        "UPDATE Conta SET IDEndereco = %s WHERE IDConta = %s",
+                        (novo_id_endereco, self.conta_atual)
+                    )
+                    print("✅ Endereço atualizado com sucesso!")
+                    break
+                except ValueError:
+                    print("❌ ID inválido!")
+        
+        elif opcao == "4":
+            self.listar_planos()
+            while True:
+                try:
+                    novo_id_plano = int(input("\n💳 Digite o ID do novo plano: ").strip())
+                    resultado = self.db.buscar_um(
+                        "SELECT IDPlano FROM Plano WHERE IDPlano = %s",
+                        (novo_id_plano,)
+                    )
+                    if not resultado:
+                        print("❌ Plano não encontrado!")
+                        continue
+                    
+                    # Buscar assinatura atual
+                    assinatura = self.db.buscar_um(
+                        "SELECT IDAssinatura FROM Assinatura WHERE IDConta = %s",
+                        (self.conta_atual,)
+                    )
+                    
+                    if assinatura:
+                        id_assinatura = assinatura[0]
+                        self.db.executar(
+                            "UPDATE Assinatura SET IDPlano = %s WHERE IDAssinatura = %s",
+                            (novo_id_plano, id_assinatura)
+                        )
+                    else:
+                        self.db.executar(
+                            "INSERT INTO Assinatura (IDConta, IDPlano) VALUES (%s, %s)",
+                            (self.conta_atual, novo_id_plano)
+                        )
+                    
+                    print("✅ Plano atualizado com sucesso!")
+                    break
+                except ValueError:
+                    print("❌ ID inválido!")
+        
+        elif opcao == "5":
+            print("❌ Operação cancelada!")
+        
+        else:
+            print("❌ Opção inválida!")
+        
+        input("\nPressione ENTER para continuar...")
     
     def visualizar_obras(self):
         """Visualizar filmes e séries disponíveis"""
