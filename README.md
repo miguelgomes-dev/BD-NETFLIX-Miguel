@@ -23,116 +23,199 @@ Implementar uma interface CRUD em Python para gerenciar um banco de dados Netfli
 | `criar_indices.sql` | Índices e queries críticas com EXPLAIN ANALYZE |
 | `conexao_db.py` | Módulo de conexão com PostgreSQL |
 | `interface_netflix.py` | Interface interativa principal |
+| `executar_interface.py` | Launcher com menu de opções |
 | `requirements.txt` | Dependências Python |
 
 ---
 
-## 🚀 Como Executar
+## 🚀 Como Executar (Passo a Passo)
 
-### 🧰 Pré-requisitos
-- Python 3.10+ instalado
-- PostgreSQL instalado e em execução
-- Acesso ao usuário `postgres` no PostgreSQL
+### 📝 Pré-requisitos
 
-> Se o repositório já tiver uma pasta `venv/` quebrada, recrie antes do setup:
-> ```bash
-> rm -rf venv
-> ```
+Você está em um **Codespace** ou **Devcontainer**? Ótimo! Tudo já está automatizado! 🎉
 
-### 1️⃣ Criar o ambiente virtual Python
-```bash
-cd /workspace
-python3 -m venv venv
-source venv/bin/activate
-```
+O arquivo `.devcontainer/devcontainer.json` configura:
+- ✅ Python 3.x com pip
+- ✅ PostgreSQL 15 (Docker)
+- ✅ Cliente PostgreSQL
+- ✅ Instalação automática das dependências
+- ✅ Banco de dados "netflix" com tabelas e dados iniciais
 
-> No Windows PowerShell:
-> ```powershell
-> python -m venv venv
-> venv\Scripts\Activate.ps1
-> ```
+---
 
-### 🧪 Usando Codespaces ou Devcontainer
-Se você abriu este projeto em um Codespace ou usando o Devcontainer (`.devcontainer/`), o ambiente já será preparado automaticamente.
+## ✨ PASSOS RÁPIDOS (Codespace/Devcontainer)
 
-- O container instalará Python 3, `pip` e o cliente PostgreSQL.
-- As dependências em `requirements.txt` serão instaladas automaticamente após a criação do container.
+### 1️⃣ Abrir o Codespace/Devcontainer
 
-Basta abrir o workspace no Codespace e aguardar a configuração finalizar. Depois execute:
-```bash
-cd /workspace
-python3 executar_interface.py
-```
+Depois que o container estiver **pronto** (aguarde ~1-2 minutos):
+- Todos os arquivos Python estarão prontos
+- PostgreSQL estará rodando
+- Dependências já instaladas
+- Banco de dados "netflix" criado com dados iniciais
 
-### 2️⃣ Atualizar pip e instalar dependências
-```bash
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-```
+> **Sinais que está pronto:**
+> - Terminal não mostra mais mensagens de inicialização
+> - Pode executar comandos normalmente
 
-### 3️⃣ Criar o banco de dados PostgreSQL
-```bash
-psql -U postgres -c "CREATE DATABASE netflix;"
-psql -U postgres -d netflix -f DDL.sql
-psql -U postgres -d netflix -f DML.sql
-```
+---
 
-> Se o PostgreSQL exigir senha, defina antes:
-> ```bash
-> export PGPASSWORD='sua_senha'
-> ```
+### 2️⃣ Verificar a conexão com o banco
 
-### 4️⃣ Verificar conexão e rodar a interface
 ```bash
 psql -U postgres -d netflix -c "SELECT COUNT(*) FROM Conta;"
-python executar_interface.py
 ```
 
-> Alternativa direta:
-> ```bash
-> python interface_netflix.py
-> ```
+**Resultado esperado:** `5` (contas de teste já inseridas)
 
-### 5️⃣ Criar índices de performance (opcional)
+> Se receber erro `psql: command not found`, aguarde mais 30 segundos (PostgreSQL ainda está iniciando)
+
+---
+
+### 3️⃣ Executar a interface (3 opções)
+
+#### **Opção A: Menu Principal (RECOMENDADO)**
+```bash
+python3 executar_interface.py
+```
+Você verá um menu com:
+1. 🎬 Iniciar Interface CRUD
+2. 🧪 Executar Testes
+3. 📊 Ver Índices
+4. 🚪 Sair
+
+#### **Opção B: Interface Direta**
+```bash
+python3 interface_netflix.py
+```
+
+#### **Opção C: Rodar Testes de Validação**
+```bash
+python3 teste_interface.py
+```
+
+---
+
+### 4️⃣ (Opcional) Criar índices de performance
+
+```bash
+psql -U postgres -d netflix -f criar_indices.sql
+```
+
+Depois compare a performance:
 ```bash
 psql -U postgres -d netflix -f criar_indices.sql
 ```
 
 ---
 
-## 🎯 Fluxo de Uso
+## 🚀 Para Computador Local (sem Codespace)
 
-### Interface Interativa - Casos de Uso
+Se você quer rodar **localmente** sem Codespace:
+
+### 1️⃣ Criar ambiente virtual
+```bash
+python3 -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
+```
+
+### 2️⃣ Instalar dependências
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+### 3️⃣ Configurar PostgreSQL
+
+Certifique-se de que PostgreSQL está rodando, depois:
+
+```bash
+# Criar banco e importar dados
+psql -U postgres -c "CREATE DATABASE netflix;"
+psql -U postgres -d netflix -f DDL.sql
+psql -U postgres -d netflix -f DML.sql
+```
+
+Se PostgreSQL exigir senha:
+```bash
+export PGPASSWORD='sua_senha'  # Linux/Mac
+set PGPASSWORD=sua_senha        # Windows
+```
+
+### 4️⃣ Rodar a interface
+```bash
+python3 executar_interface.py
+```
+
+---
+
+## 🎯 Como Usar a Interface
+
+Ao executar a interface, você tem um **menu principal** com 3 opções:
 
 ```
-┌─────────────────────────────────────────────┐
-│  1. CRIAR CONTA                             │
-│     - Email                                  │
-│     - Senha (mín. 6 caracteres)             │
-│     - Selecionar Endereço                   │
-│     - Escolher Plano de Assinatura          │
-└─────────────────────────────────────────────┘
-                    ↓
-┌─────────────────────────────────────────────┐
-│  2. CRIAR PERFIL                            │
-│     - Nome do Perfil                        │
-│     - Escolher Avatar                       │
-└─────────────────────────────────────────────┘
-                    ↓
-┌─────────────────────────────────────────────┐
-│  3. MENU PRINCIPAL                          │
-│     - Ver Filmes/Séries por Gênero         │
-│     - Editar Perfil                         │
-│     - Editar Conta                          │
-│     - Deletar Perfil                        │
-│     - Deletar Conta                         │
-│     - Sair                                  │
-└─────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────┐
+│   INTERFACE NETFLIX - MENU PRINCIPAL               │
+├────────────────────────────────────────────────────┤
+│                                                    │
+│  1️⃣  INICIAR INTERFACE CRUD (Menu Interativo)     │
+│       - Criar Conta                               │
+│       - Criar Perfil                              │
+│       - Ver Filmes/Séries por Gênero             │
+│       - Editar Perfil/Conta                       │
+│       - Deletar Perfil/Conta                      │
+│                                                    │
+│  2️⃣  EXECUTAR TESTES (Validação)                 │
+│       - Teste de conexão ao banco                 │
+│       - Verificação de índices                    │
+│       - Teste CRUD                                │
+│       - Performance                               │
+│                                                    │
+│  3️⃣  VER ÍNDICES CRIADOS                          │
+│       - Lista de índices no banco                 │
+│                                                    │
+│  4️⃣  SAIR                                          │
+│                                                    │
+└────────────────────────────────────────────────────┘
+```
+
+### Fluxo Típico da Interface CRUD:
+
+```
+PASSO 1: Criar Conta
+├─ Email (deve ser único)
+├─ Senha (mínimo 6 caracteres)
+├─ Selecionar Endereço (de uma lista)
+└─ Escolher Plano de Assinatura
+
+    ↓
+
+PASSO 2: Criar Perfil
+├─ Nome do Perfil
+└─ Escolher Avatar
+
+    ↓
+
+PASSO 3: Menu Principal
+├─ Ver Filmes/Séries por Gênero
+├─ Editar Perfil
+├─ Editar Conta
+├─ Deletar Perfil
+├─ Deletar Conta
+└─ Sair
 ```
 
 ---
 
 ## 📊 Índices Criados e Performance
+
+### ⚠️ Importante: Criar os Índices
+
+Por padrão, o banco vem **SEM os índices otimizados**. Para ativar e testar a performance:
+
+```bash
+psql -U postgres -d netflix -f criar_indices.sql
+```
 
 ### Índices Implementados
 
@@ -155,57 +238,53 @@ psql -U postgres -d netflix -f criar_indices.sql
 
 ---
 
-## 🔍 Verificar Performance com EXPLAIN ANALYZE
+## 🔍 Testar Performance com EXPLAIN ANALYZE
 
-### Comparar antes e depois dos índices:
-
-#### ANTES (sem índice):
+### Passo 1: Ver a performance SEM índices
 ```bash
-psql -U postgres -d netflix -c "
+psql -U postgres -d netflix << 'EOF'
 EXPLAIN ANALYZE
 SELECT DISTINCT o.IDObra, o.Titulo
 FROM Obra o
 INNER JOIN GeneroObra go ON o.IDObra = go.IDObra
-WHERE go.IDGenero = 1;"
+WHERE go.IDGenero = 1;
+EOF
 ```
 
-#### DEPOIS (com índice):
+**Observe:**
+- `Seq Scan` em GeneroObra (scan sequencial - lento!)
+- Tempo de execução (em ms)
+
+### Passo 2: Criar os índices
 ```bash
 psql -U postgres -d netflix -f criar_indices.sql
-psql -U postgres -d netflix -c "
+```
+
+### Passo 3: Ver a performance COM índices
+```bash
+psql -U postgres -d netflix << 'EOF'
 EXPLAIN ANALYZE
 SELECT DISTINCT o.IDObra, o.Titulo
 FROM Obra o
 INNER JOIN GeneroObra go ON o.IDObra = go.IDObra
-WHERE go.IDGenero = 1;"
+WHERE go.IDGenero = 1;
+EOF
 ```
 
-**Resultado esperado:** 
+**Observe:**
+- `Index Scan` em GeneroObra (muito mais rápido!)
 - Tempo de execução reduzido em ~60-80%
-- Index Scan em vez de Seq Scan
+
+### 📈 Resultado Esperado
+
+| Aspecto | ANTES | DEPOIS |
+|---------|-------|--------|
+| Tipo de Scan | Seq Scan | Index Scan |
+| Linhas lidas | ~100+ | ~5-10 |
+| Tempo (ms) | 5-10ms | 0.5-1ms |
+| % Melhora | - | **60-80% mais rápido** |
 
 ---
-
-## 📝 Operações CRUD Implementadas
-
-### CREATE
-- ✅ Criar Conta (com validação de email/senha)
-- ✅ Criar Perfil (com avatar)
-- ✅ Assinatura automática ao plano
-
-### READ
-- ✅ Listar Endereços
-- ✅ Listar Planos
-- ✅ Visualizar Filmes/Séries por Gênero
-- ✅ Listar Perfis da Conta
-
-### UPDATE
-- ✅ Editar Perfil (Nome, Avatar)
-- ✅ Editar Conta (Email, Senha, Endereço, Plano)
-
-### DELETE
-- ✅ Deletar Perfil (com confirmação)
-- ✅ Deletar Conta (com cascade automático)
 
 ---
 
@@ -254,42 +333,119 @@ ORDER BY QuantidadeObras DESC;
 
 ---
 
-## 🧪 Teste Rápido
+## 🧪 Executar Tudo em Uma Vez
 
+### No Codespace/Devcontainer:
 ```bash
-# 1. Instalar dependências
-pip install -r requirements.txt
+# Verificar conexão
+psql -U postgres -d netflix -c "SELECT COUNT(*) FROM Conta;"
 
-# 2. Criar índices
+# Criar índices (opcional)
 psql -U postgres -d netflix -f criar_indices.sql
 
-# 3. Executar interface
-python interface_netflix.py
+# Executar a interface
+python3 executar_interface.py
+```
 
-# 4. Siga os prompts:
-#    - Digite "1" para Criar Conta
-#    - Escolha email, senha, endereço e plano
-#    - Crie um perfil
-#    - Explore o menu (ver filmes, deletar, etc.)
+Escolha a opção **1** no menu para iniciar a interface CRUD!
+
+### No Computador Local:
+```bash
+# Ativar virtual environment
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
+
+# Instalar dependências (se não tiver feito)
+pip install -r requirements.txt
+
+# Verificar conexão
+psql -U postgres -d netflix -c "SELECT COUNT(*) FROM Conta;"
+
+# Rodar a interface
+python3 executar_interface.py
 ```
 
 ---
 
 ## 🔧 Requisitos
 
-- Python 3.7+
-- PostgreSQL 12+
-- `psycopg2-binary` (instalado via requirements.txt)
-- Sistema operacional: Linux, macOS ou Windows
+- **Python:** 3.7+
+- **PostgreSQL:** 12+
+- **Dependências:** `psycopg2-binary` (instalado via requirements.txt)
+
+### Em Codespace/Devcontainer: ✅ Tudo automático!
+### No computador local: ⚠️ PostgreSQL deve estar rodando
 
 ---
 
-## 📌 Notas Importantes
+## ❌ Troubleshooting
 
-1. **Senhas de exemplo:** Não usar em produção (armazenar com hash!)
-2. **Validação:** Email único, senha com 6+ caracteres
-3. **Cascade:** Deletar conta deleta todos os perfis automaticamente
-4. **Performance:** Índices criados em tabelas de alta frequência
+### Erro: `psql: command not found`
+**Causa:** PostgreSQL cliente não está instalado ou não está no PATH
+
+**Solução (Codespace):**
+```bash
+apt-get update && apt-get install -y postgresql-client
+```
+
+**Solução (Computador Local):** 
+- Instale PostgreSQL completo ou apenas o cliente PostgreSQL
+
+---
+
+### Erro: `could not connect to server: Connection refused`
+**Causa:** PostgreSQL não está rodando
+
+**Solução (Codespace):** Aguarde 1-2 minutos após abrir o container (inicialização do PostgreSQL)
+
+**Solução (Computador Local):**
+```bash
+# Linux
+sudo systemctl start postgresql
+
+# Mac
+brew services start postgresql
+
+# Windows
+# Abra Services → encontre "postgresql-x64" → Start
+```
+
+---
+
+### Erro: `FATAL: database "netflix" does not exist`
+**Causa:** Banco não foi criado
+
+**Solução (Codespace):** Aguarde 2 minutos (DDL.sql é executado automaticamente)
+
+**Solução (Computador Local):**
+```bash
+psql -U postgres -c "CREATE DATABASE netflix;"
+psql -U postgres -d netflix -f DDL.sql
+psql -U postgres -d netflix -f DML.sql
+```
+
+---
+
+### Erro: `ModuleNotFoundError: No module named 'psycopg2'`
+**Causa:** Dependências não instaladas
+
+**Solução:**
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+### Erro: `FATAL: password authentication failed for user "postgres"`
+**Causa:** Senha do PostgreSQL incorreta
+
+**Solução (Codespace):** Já está configurada no `.devcontainer` (não precisa fazer nada)
+
+**Solução (Computador Local):**
+```bash
+export PGPASSWORD='sua_senha'  # Linux/Mac
+set PGPASSWORD=sua_senha        # Windows
+```
 
 ---
 
@@ -301,6 +457,96 @@ python interface_netflix.py
 
 ---
 
-## 📅 Data de Entrega
+## � Estrutura do Projeto
+
+```
+BD-NETFLIX-Miguel/
+│
+├── .devcontainer/                 # ✅ Configuração do Codespace/Devcontainer
+│   ├── devcontainer.json          # Variáveis de ambiente e setup automático
+│   └── docker-compose.yml         # PostgreSQL + Python container
+│
+├── SQL/
+│   ├── DDL.sql                    # Criação das tabelas
+│   ├── DML.sql                    # Dados iniciais (contas, perfis, obras)
+│   └── criar_indices.sql          # Índices de performance
+│
+├── Python/
+│   ├── interface_netflix.py       # Interface CRUD (menus interativos)
+│   ├── conexao_db.py              # Módulo de conexão com PostgreSQL
+│   ├── executar_interface.py      # Launcher com menu principal
+│   └── teste_interface.py         # Testes de validação
+│
+├── requirements.txt               # Dependências (psycopg2)
+├── README.md                      # Este arquivo
+├── ENTREGA_FINAL.md              # Documentação completa do projeto
+└── backup.sql                     # Backup do banco (opcional)
+```
+
+---
+
+## 📝 Operações CRUD Implementadas
+
+### ✅ CREATE
+- Criar Conta (com validação de email único e senha)
+- Criar Perfil (com avatar)
+- Assinatura automática ao plano
+
+### ✅ READ
+- Listar Endereços
+- Listar Planos
+- Listar Perfis da conta
+- Visualizar Filmes/Séries por Gênero
+
+### ✅ UPDATE (Editar)
+- Editar Perfil (Nome, Avatar)
+- Editar Conta (Email, Senha, Endereço, Plano)
+
+### ✅ DELETE
+- Deletar Perfil (com confirmação)
+- Deletar Conta (com cascade automático)
+
+---
+
+## 📌 Dados Iniciais Carregados
+
+O banco vem pré-carregado com:
+- **5 Contas** de teste
+- **9 Perfis** associados
+- **10 Obras** (Filmes e Séries)
+- **7 Gêneros** (Ação, Drama, Comédia, etc.)
+- **8 Atores**
+- **3 Planos** de assinatura
+- **5 Endereços**
+
+Você pode criar mais contas, perfis e explorar o catálogo!
+
+---
+
+## 🎓 Conceitos Demonstrados
+
+1. **Banco de Dados Relacional:**
+   - Chaves primárias e estrangeiras
+   - Relacionamentos 1:N e N:M
+   - Integridade referencial
+
+2. **Performance:**
+   - Índices em tabelas críticas
+   - EXPLAIN ANALYZE para análise
+   - Diferença de Seq Scan vs Index Scan
+
+3. **Segurança (Conceitual):**
+   - Validação de entrada
+   - Queries parametrizadas (SQL injection prevention)
+   - Email único (restrição)
+
+4. **Interface:**
+   - Menu interativo
+   - CRUD operacional
+   - Feedback ao usuário
+
+---
+
+## �📅 Data de Entrega
 
 **Junho de 2026**
