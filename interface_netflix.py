@@ -1,6 +1,8 @@
 from conexao_db import ConexaoDB
 import re
 import os
+import time
+from datetime import datetime, timedelta
 
 class InterfaceNetflix:
     """Interface interativa para o sistema Netflix"""
@@ -49,6 +51,7 @@ class InterfaceNetflix:
         return True
     
     def criar_conta(self):
+        data
         """Criar nova conta Netflix"""
         self.limpar_tela()
         print("=" * 60)
@@ -111,10 +114,15 @@ class InterfaceNetflix:
             )
             self.conta_atual = self.db.obter_ultimo_id()
             
-            # Inserir assinatura
+            # Calcular datas da assinatura
+            data_inicio = datetime.now().date()
+            # Data de fim é um mês depois
+            data_fim = data_inicio + timedelta(days=30)
+            
+            # Inserir assinatura com as datas
             self.db.executar(
-                "INSERT INTO Assinatura (IDConta, IDPlano) VALUES (%s, %s)",
-                (self.conta_atual, id_plano)
+                "INSERT INTO Assinatura (DataInicio, DataFim, IDConta, IDPlano) VALUES (%s, %s, %s, %s)",
+                (data_inicio, data_fim, self.conta_atual, id_plano)
             )
             
             print(f"\n✅ Conta criada com sucesso! ID: {self.conta_atual}")
@@ -428,9 +436,12 @@ class InterfaceNetflix:
                             (novo_id_plano, id_assinatura)
                         )
                     else:
+                        # Calcular datas da assinatura se não existir
+                        data_inicio = datetime.now().date()
+                        data_fim = data_inicio + timedelta(days=30)
                         self.db.executar(
-                            "INSERT INTO Assinatura (IDConta, IDPlano) VALUES (%s, %s)",
-                            (self.conta_atual, novo_id_plano)
+                            "INSERT INTO Assinatura (DataInicio, DataFim, IDConta, IDPlano) VALUES (%s, %s, %s, %s)",
+                            (data_inicio, data_fim, self.conta_atual, novo_id_plano)
                         )
                     
                     print("✅ Plano atualizado com sucesso!")
