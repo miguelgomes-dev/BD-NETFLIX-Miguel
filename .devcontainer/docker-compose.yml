@@ -1,6 +1,6 @@
 services:
   app:
-    image: mcr.microsoft.com/devcontainers/python:0-ubuntu-22.04
+    image: mcr.microsoft.com/devcontainers/python:3.11-bookworm
     volumes:
       - ..:/workspaces/BD-NETFLIX-Miguel:cached
     working_dir: /workspaces/BD-NETFLIX-Miguel
