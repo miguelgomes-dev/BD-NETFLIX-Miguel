@@ -16,6 +16,5 @@ services:
     volumes:
       - ../DDL.sql:/docker-entrypoint-initdb.d/01_DDL.sql
       - ../DML.sql:/docker-entrypoint-initdb.d/02_DML.sql
-      - ../criar_indices.sql:/docker-entrypoint-initdb.d/03_criar_indices.sql
     ports:
       - "5432:5432"

@@ -142,3 +142,6 @@ CREATE TABLE Assinatura (
     FOREIGN KEY (IDPlano) REFERENCES Plano(IDPlano),
     FOREIGN KEY (IDConta) REFERENCES Conta(IDConta)
 );
+
+
+CREATE INDEX idx_generoobra_idgenero ON GeneroObra(IDGenero);
